@@ -10,7 +10,30 @@ from datetime import datetime, date
 from influxdb import InfluxDBClient
 from influxdb import SeriesHelper
 from Tkinter import *
-from tkMessageBox import askokcancel           
+from tkMessageBox import askokcancel
+
+class MySeriesHelper(SeriesHelper):
+    # Meta class stores time series helper configuration.
+    class Meta:
+    	host = '192.168.201.129'
+    	port = 8086
+    	user = 'root'
+    	password = 'root'
+    	dbname = 'prac'
+    	t = time.time()
+    	client = InfluxDBClient(host, port, user, password, dbname)
+    	client.create_database(dbname)
+        # The client should be an instance of InfluxDBClient.
+        # The series name must be a string. Add dependent fields/tags in curly brackets.
+        series_name = 'eventsstats{server_name}'
+        # Defines all the fields in this time series.
+        fields = ['time','some_stat', 'other_stat']
+        # Defines all the tags for the series.
+        tags = ['server_name']
+        # Defines the number of data points to store prior to writing on the wire.
+        bulk_size = 10
+        # autocommit must be set to True when using bulk_size
+        autocommit = True
 
 def convertUnixTime(str):
 	str = str[:str.find('.')]
@@ -22,11 +45,8 @@ def convertToUTC(posix_time):
 	return datetime.utcfromtimestamp(posix_time).strftime('%Y-%m-%dT%H:%M:%SZ')
 
 def submitPoint(rowsTitle,measurement,entryNum):
-	d = {"measurement": measurement.replace('.','')}
-	d["time"] = (rowsTitle[entryNum]['DateTime'])
-	del rowsTitle[entryNum]['DateTime']
-	d["fields"] = rowsTitle[entryNum]
-	return d
+	print "submit point + " + str(entryNum)
+	MySeriesHelper(server_name='useast',time=rowsTitle[entryNum]['DateTime'],some_stat=1,other_stat=1)
 
 def getRecentDateInflux(client):
 	print("Loading influxDB Database...")
@@ -34,7 +54,8 @@ def getRecentDateInflux(client):
 	temp_str = str(format(result))
 	startIndex = temp_str.find("time")
 	endIndex = temp_str.find("Z", startIndex)
-	temp_date = (temp_str[startIndex:endIndex])[9:31]
+	temp_date = (
+		emp_str[startIndex:endIndex])[9:31]
 	try:
 		return convertUnixTime(temp_date)
 	except:
@@ -53,10 +74,11 @@ class Quitter(Frame):
 
 def handleSQL(s):
 	if ("order" not in s.lower()):
-		s = s + " ORDER BY DateTime"
+		s = s + " ORDER BY DateTime desc"
 	return s
 
 def fetch(variables):
+	global seriesName
 	SolarWinds = variables[0].get()
 	SWID = variables[1].get()
 	SWPass = variables[2].get()
@@ -72,16 +94,14 @@ def fetch(variables):
 	#====================================MAIN WORK==================================================
 	def callback():
 		print "Starting to pipe Data ORION --> Influxdb"
-		mostRecent = 0
+
 		if "DateTime" not in SQL:
 			print "Please Insert DateTime to the Query for TimeSeries Data"
 			sys.exit()
 
 		client = InfluxDBClient(influxdb, dbport, dbID, dbPass, dbName)
-		print type(client)
 		client.create_database(dbName)
 		#open InfluxDB server to connect
-		mostRecent = getRecentDateInflux(client) #potential Performance Issue
 		while (True):
 			#turn of the Certificate warning
 			start_time = time.time()
@@ -98,20 +118,17 @@ def fetch(variables):
 			SQL_temp = SQL_temp.replace(',','')
 			#this line is to get the name of the table
 			measurement = getMeasurement(SQL_temp)
+			seriesName = measurement
 			data_str = json.dumps(data)
 			data_arr = json.loads(data_str)
 			rowsTitle = data_arr["results"]
 			L = []
-			for i in range(len(rowsTitle)-1,-1,-1):
-				if (convertUnixTime(rowsTitle[i]['DateTime']) < mostRecent):
-					print "Database is Up-To-Date"
-					break
-				#if (mostRecent != 0):
-				#	print "Most Update Datapoint is " + str(convertToUTC(mostRecent))
+			for i in range(0,len(rowsTitle)-1):
+				#if (convertUnixTime(rowsTitle[i]['DateTime']) < mostRecent):
+				#	print "Database is Up-To-Date"
+				#	break
 				onePoint=submitPoint(rowsTitle,measurement,i)
-				L.append(onePoint)
-
-			client.write_points(L)
+			MySeriesHelper.commit()
 			print "Run time " + str((time.time()-start_time))
 			print "Executing again in " + str(t)+ " seconds\n\n\n"
 			time.sleep(t);
@@ -153,6 +170,7 @@ def makeform(root, fields, samples):
         var.set(samples[count])
         count+=1
     return variables
+
 fields = 'SolarWindServer', 'ID', 'Pass', 'Query', 'InfluxdbServer', 'Port', 'ID', 'Pass', 'DBNAME', 'Update Period'
 samples = ['win-3vhamfq91kp', 'fish', 'swordfish', 'SELECT DateTime, MinMemoryUsed, MaxMemoryUsed, AvgMemoryUsed, AvgPercentMemoryUsed FROM Orion.CPULoad',
 			'192.168.201.129', 8086 , 'root', 'root', 'mydb', 0.1]
