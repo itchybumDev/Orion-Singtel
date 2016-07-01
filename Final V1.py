@@ -32,7 +32,9 @@ def submitPoint(rowsTitle,measurement,entryNum):
 	return d
 
 def getTags(d):
-	tags=['IPAddress','Caption','NodeDescription','DNS','SysName','Vendor','DisplayName']
+	tags=['IPAddress','Caption','NodeDescription','DNS','SysName','Vendor','DisplayName','NodeID',
+			'SysObjectID','Location','Contact','IOSVersion','AgentPort','EngineID','IP',
+			'IP_Address','NodeName','IPAddressGUID','EntityType']
 	keys = d.keys()
 	ans = {}
 	for key in keys:
