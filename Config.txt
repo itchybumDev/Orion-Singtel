@@ -7,4 +7,4 @@ dbport = 8086
 dbID = "root"
 dbPass = "root"
 dbName = "mydb"
-t = 0.1
+t = 123

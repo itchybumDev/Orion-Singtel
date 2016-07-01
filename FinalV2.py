@@ -5,6 +5,7 @@ import ast
 import sys
 import threading
 import time
+import os.path
 from datetime import datetime, date
 from influxdb import InfluxDBClient
 from Tkinter import *
@@ -209,17 +210,34 @@ def makeform(root, fields, samples):
         var.set(samples[count])
         count+=1
     return variables
-
+def getSamplesFromFile():
+	f = open('Config.txt','r')
+	finput = f.readlines()
+	sample=[]
+	for i in range(0,len(finput)):
+		tmp =finput[i][(finput[i].find('=')+1):]
+		tmp = tmp.replace('\n','')
+		tmp = tmp.replace(' ','')
+		tmp = tmp.replace('"','')
+		sample.append(tmp)
+	return sample
+	
 fields = 'SolarWindServer', 'ID', 'Pass', 'Query', 'InfluxdbServer', 'Port', 'ID', 'Pass', 'DBNAME', 'Update Period'
-samples = ['win-3vhamfq91kp', 'fish', 'swordfish', 
-			'SELECT c.NodeID, IPAddress, IPAddressType, Caption, DateTime, Archive, MinLoad, MaxLoad, AvgLoad, c.TotalMemory, MinMemoryUsed, MaxMemoryUsed, AvgMemoryUsed, AvgPercentMemoryUsed FROM Orion.CPULoad c , Orion.Nodes n where c.NodeID = n.NodeID',
-			'192.168.201.129', 8086 , 'root', 'root', 'mydb', 0.2]
+
 
 if __name__ == '__main__':
 	root = Tk()
 	root.title("SolarWinds to InfluxDB")
 	gotInput = False
 	root.geometry('{}x{}'.format(600, 300))
+	#finding the Config File
+	if os.path.isfile('Config.txt'):
+		samples = getSamplesFromFile()
+	else:
+		samples = ['win-3vhamfq91kp', 'fish', 'swordfish', 
+			'SELECT c.NodeID, IPAddress, IPAddressType, Caption, DateTime, Archive, MinLoad, MaxLoad, AvgLoad, c.TotalMemory, MinMemoryUsed, MaxMemoryUsed, AvgMemoryUsed, AvgPercentMemoryUsed FROM Orion.CPULoad c , Orion.Nodes n where c.NodeID = n.NodeID',
+			'192.168.201.129', 8086 , 'root', 'root', 'mydb', 0.2]
+
 	vars = makeform(root, fields, samples)	
 	Button(root, text='Start', width = 10,
 	        command=(lambda v=vars: fetch(v))).pack(side=BOTTOM)
