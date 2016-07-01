@@ -85,4 +85,4 @@ MySeriesHelper(server_name1='useast', some_stat1=234, other_stat1=50)
 MySeriesHelper.commit()
 print time.time()-t
 # To inspect the JSON which will be written, call _json_body_():
-MySeriesHelper._json_body_()
+print MySeriesHelper._json_body_()

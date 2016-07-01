@@ -21,8 +21,6 @@ def convertToUTC(posix_time):
 	return datetime.utcfromtimestamp(posix_time).strftime('%Y-%m-%dT%H:%M:%SZ')
 
 def submitPoint(rowsTitle,measurement,entryNum):
-	if (entryNum!=0):
-		print "submit "+ str(entryNum) + " point"
 	d = {"measurement": measurement.replace('.','')}
 	d["time"] = (rowsTitle[entryNum]['DateTime'])
 	del rowsTitle[entryNum]['DateTime']
@@ -82,8 +80,7 @@ def fetch(variables):
 	dbPass = variables[7].get()
 	dbName = variables[8].get()
 	t = float(variables[9].get()) * 60.0
-	#check for the entry in influxdb table
-
+	#check for the latest entry in influxdb table
 	#====================================MAIN WORK==================================================
 	def callback():
 		print "Starting to pipe Data ORION --> Influxdb"
@@ -91,14 +88,10 @@ def fetch(variables):
 		if "DateTime" not in SQL:
 			print "Please Insert DateTime to the Query for TimeSeries Data"
 			sys.exit()
+
+		client = InfluxDBClient(influxdb, dbport, dbID, dbPass, dbName)
+		client.create_database(dbName)
 		#open InfluxDB server to connect
-		try:
-			client = InfluxDBClient(influxdb, dbport, dbID, dbPass, dbName)
-			client.create_database(dbName)
-		except:
-			print ("InfluxDb server/port/ID or Pass is wrong")
-			sys.exit()
-		latestPointSW = {}
 		while (True):
 			#turn of the Certificate warning
 			start_time = time.time()
@@ -115,25 +108,19 @@ def fetch(variables):
 			SQL_temp = SQL_temp.replace(',','')
 			#this line is to get the name of the table
 			measurement = getMeasurement(SQL_temp)
+			seriesName = measurement
 			data_str = json.dumps(data)
 			data_arr = json.loads(data_str)
 			rowsTitle = data_arr["results"]
 			L = []
-			
 			for i in range(0,len(rowsTitle)-1):
+				#if (convertUnixTime(rowsTitle[i]['DateTime']) < mostRecent):
+				#	print "Database is Up-To-Date"
+				#	break
 				onePoint=submitPoint(rowsTitle,measurement,i)
-				#Check to see which is the latest point posting to InfluxDB
-				if (cmp(latestPointSW,onePoint)==0):
-					print "Database is Up-To-Date"
-					break
 				L.append(onePoint)
-			
-			if not L:
-				p=1 #useless code, just for syntax purpose
-			else:
-				latestPointSW = L[0]
-				client.write_points(L)
-			
+			print L[0]
+			client.write_points(L)
 			print "Run time " + str((time.time()-start_time))
 			print "Executing again in " + str(t)+ " seconds\n\n\n"
 			time.sleep(t);
@@ -177,8 +164,7 @@ def makeform(root, fields, samples):
     return variables
 
 fields = 'SolarWindServer', 'ID', 'Pass', 'Query', 'InfluxdbServer', 'Port', 'ID', 'Pass', 'DBNAME', 'Update Period'
-samples = ['win-3vhamfq91kp', 'fish', 'swordfish', 
-			'SELECT c.NodeID, IPAddress, IPAddressType, Caption, DateTime, Archive, MinLoad, MaxLoad, AvgLoad, c.TotalMemory, MinMemoryUsed, MaxMemoryUsed, AvgMemoryUsed, AvgPercentMemoryUsed FROM Orion.CPULoad c , Orion.Nodes n where c.NodeID = n.NodeID',
+samples = ['win-3vhamfq91kp', 'fish', 'swordfish', 'SELECT DateTime, MinMemoryUsed, MaxMemoryUsed, AvgMemoryUsed, AvgPercentMemoryUsed FROM Orion.CPULoad',
 			'192.168.201.129', 8086 , 'root', 'root', 'mydb', 10]
 
 if __name__ == '__main__':
