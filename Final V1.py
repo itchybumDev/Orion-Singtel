@@ -1,6 +1,5 @@
 import orionsdk
 import requests
-import Tkinter
 import json
 import ast
 import sys
@@ -24,7 +23,11 @@ def submitPoint(rowsTitle,measurement,entryNum):
 	if (entryNum!=0):
 		print "submit "+ str(entryNum) + " point"
 	d = {"measurement": measurement.replace('.','')}
-	d["time"] = (rowsTitle[entryNum]['DateTime'])
+	try:
+		d["time"] = (rowsTitle[entryNum]['DateTime'])
+	except:
+		print "There is no Value DateTime in the Query. please check \n Program has STOPPED"
+		sys.exit()
 	del rowsTitle[entryNum]['DateTime']
 	temp_data= getTags(rowsTitle[entryNum])
 	d["tags"] = temp_data[0]
@@ -102,9 +105,8 @@ def fetch(variables):
 	#====================================MAIN WORK==================================================
 	def callback():
 		print "Starting to pipe Data ORION --> Influxdb"
-
-		if "DateTime" not in SQL:
-			print "Please Insert DateTime to the Query for TimeSeries Data"
+		if SQL.count('DateTime')<=2:
+			print('Please Insert DateTime to the Query for TimeSeries Data')
 			sys.exit()
 		#open InfluxDB server to connect
 		try:
@@ -144,7 +146,11 @@ def fetch(variables):
 			measurement = getMeasurement(SQL_temp)
 			data_str = json.dumps(data)
 			data_arr = json.loads(data_str)
-			rowsTitle = data_arr["results"]
+			try:
+				rowsTitle = data_arr["results"]
+			except:
+				print "Error in Query Request Please Syntax Again"
+				sys.exit()
 			L = []
 			
 			for i in range(0,len(rowsTitle)-1):
@@ -210,11 +216,12 @@ samples = ['win-3vhamfq91kp', 'fish', 'swordfish',
 
 if __name__ == '__main__':
 	root = Tk()
+	root.title("SolarWinds to InfluxDB")
 	gotInput = False
 	root.geometry('{}x{}'.format(600, 300))
-	vars = makeform(root, fields, samples)
+	vars = makeform(root, fields, samples)	
 	Button(root, text='Start', width = 10,
-                 command=(lambda v=vars: fetch(v))).pack(side=BOTTOM)
+	        command=(lambda v=vars: fetch(v))).pack(side=BOTTOM)
 	Quitter(root).pack(side=RIGHT)
 	root.bind('<Return>', (lambda event, v=vars: fetch(v)))
 	#thread.start_new_thread(mainWork(),())
