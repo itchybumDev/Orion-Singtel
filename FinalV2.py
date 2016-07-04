@@ -74,17 +74,17 @@ class Quitter(Frame):
 
 def handleSQL(s, period):
 	if ("where" not in s.lower()):
-		s = s + " WHERE DateTime > ADDMONTH(-"+ period+",GETUTCDATE())"
+		s = s + " WHERE DateTime > ADDMONTH(-"+ str(period)+",GETUTCDATE())"
 	else:
 		where = s[(s.lower()).find('where'):]
 		a = where.find('and') 
 		g = where.find('group')
 		o = where.find('order')
 		if (a!=-1 or g!=-1 or o!=-1):
-			where = where[:max(a,g,o)] + ' and DateTime > ADDMONTH(-'+ str(-period)+',GETUTCDATE()) ' + where[max[a,o,g]:]
+			where = where[:max(a,g,o)] + ' and DateTime > ADDMONTH(-'+ str(period)+',GETUTCDATE()) ' + where[max[a,o,g]:]
 			s = s[:(s.lower()).find('where')]
 		else:
-			s = s+ ' and DateTime > ADDMONTH(-'+ str(-period)+',GETUTCDATE()) '
+			s = s+ ' and DateTime > ADDMONTH(-'+ str(period)+',GETUTCDATE()) '
 
 	if ("order" not in s.lower()):
 		s = s + " ORDER BY DateTime desc"
@@ -95,7 +95,7 @@ def fetch(variables):
 	SWID = variables[1].get()
 	SWPass = variables[2].get()
 	SQL = variables[3].get()
-	SQL = handleSQL(SQL,-1)
+	SQL = handleSQL(SQL,1)
 	influxdb = variables[4].get()
 	dbport = variables[5].get()
 	dbID = variables[6].get()
@@ -124,7 +124,7 @@ def fetch(variables):
 		firstInput = 1
 		while (True):
 			if (firstInput==0):
-				a = SQL.replace('ADDMONTH(-1,','ADDMINUTE(-'+str(int(t+2.0)) +',',1)
+				a = SQL.replace('ADDMONTH(-1,','ADDMINUTE(-'+str(int(t/60)+2) +',',1)
 				firstInput=-1
 			if (firstInput==1):
 				firstInput=0
@@ -151,7 +151,7 @@ def fetch(variables):
 			try:
 				rowsTitle = data_arr["results"]
 			except:
-				print "Error in Query Request Please Syntax Again"
+				print "Error in Query Request Please check Syntax Again"
 				sys.exit()
 			L = []
 			
@@ -169,8 +169,8 @@ def fetch(variables):
 				latestPointSW = L[0]
 				client.write_points(L)
 			
-			print "Run time " + str((time.time()-start_time))
-			print "Executing again in " + str(t)+ " seconds\n\n\n"
+			print "Run time " + str((time.time()-start_time) +"\n")
+			print "Executing again in " + str(t)+ " seconds from " + str(datetime.now())+ "\n\n"
 			time.sleep(t);
 	#====================================End of MAIN WORK==================================================		
 	th=threading.Thread(target = callback)
@@ -217,9 +217,14 @@ def getSamplesFromFile():
 	for i in range(0,len(finput)):
 		tmp =finput[i][(finput[i].find('=')+1):]
 		tmp = tmp.replace('\n','')
-		tmp = tmp.replace(' ','')
+		if (i!=3):
+			tmp = tmp.replace(' ','')
 		tmp = tmp.replace('"','')
 		sample.append(tmp)
+	if (len(sample)!=10):
+		sample = samples = ['win-3vhamfq91kp', 'fish', 'swordfish', 
+			'SELECT c.NodeID, IPAddress, IPAddressType, Caption, DateTime, Archive, MinLoad, MaxLoad, AvgLoad, c.TotalMemory, MinMemoryUsed, MaxMemoryUsed, AvgMemoryUsed, AvgPercentMemoryUsed FROM Orion.CPULoad c , Orion.Nodes n where c.NodeID = n.NodeID',
+			'192.168.201.129', 8086 , 'root', 'root', 'mydb', 0.2]
 	return sample
 	
 fields = 'SolarWindServer', 'ID', 'Pass', 'Query', 'InfluxdbServer', 'Port', 'ID', 'Pass', 'DBNAME', 'Update Period'

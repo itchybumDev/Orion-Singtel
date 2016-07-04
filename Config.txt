@@ -1,4 +1,4 @@
-SolarWinds = "win-3vhamfq91kp"
+SolarWinds = win-3vhamfq91kp
 SWID = "fish"
 SWPass = "swordfish"
 SQL = "SELECT NodeID, DateTime, Archive, MinLoad, MaxLoad, AvgLoad, TotalMemory, MinMemoryUsed, MaxMemoryUsed, AvgMemoryUsed, AvgPercentMemoryUsed FROM Orion.CPULoad"
@@ -6,5 +6,5 @@ influxdb = "192.168.201.129"
 dbport = 8086
 dbID = "root"
 dbPass = "root"
-dbName = "mydb"
-t = 123
+dbName = "July4"
+t = 1
