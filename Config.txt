@@ -8,3 +8,4 @@ dbID = "root"
 dbPass = "root"
 dbName = "July4"
 t = 5
+month = 1

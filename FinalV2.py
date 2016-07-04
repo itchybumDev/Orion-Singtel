@@ -91,6 +91,13 @@ def handleSQL(s, period):
 	return s
 
 def fetch(variables):
+	try:
+		int(variables[10].get())
+		float(variables[9].get())
+	except:
+		print ("Please input Number for Minutes and Months")
+		sys.exit()
+
 	SolarWinds = variables[0].get()
 	SWID = variables[1].get()
 	SWPass = variables[2].get()
@@ -171,8 +178,8 @@ def fetch(variables):
 				client.write_points(L)
 			
 			print "\n Update Database: " + dbName
-			print "Run time " + str((time.time()-start_time))
-			print "Executing again in " + str(t)+ " seconds from " + str(datetime.now())+ "\n\n"
+			print " Run time " + str((time.time()-start_time))
+			print " Executing again in " + str(t)+ " seconds from " + str(datetime.now())+ "\n\n"
 			time.sleep(t);
 	#====================================End of MAIN WORK==================================================		
 	th=threading.Thread(target = callback)
