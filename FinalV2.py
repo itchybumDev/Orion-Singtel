@@ -127,7 +127,6 @@ def fetch(variables):
 			if (firstInput==0):
 				a = SQL.replace(('ADDMONTH(-'+str(month)),'ADDMINUTE(-'+str(int(t/60)+2),1)
 				firstInput=-1
-				print a
 			if (firstInput==1):
 				firstInput=0
 			start_time = time.time()
@@ -171,7 +170,8 @@ def fetch(variables):
 				latestPointSW = L[0]
 				client.write_points(L)
 			
-			print "Run time " + str((time.time()-start_time)) + "\n"
+			print "\n Update Database: " + dbName
+			print "Run time " + str((time.time()-start_time))
 			print "Executing again in " + str(t)+ " seconds from " + str(datetime.now())+ "\n\n"
 			time.sleep(t);
 	#====================================End of MAIN WORK==================================================		
@@ -212,6 +212,7 @@ def makeform(root, fields, samples):
         var.set(samples[count])
         count+=1
     return variables
+
 def getSamplesFromFile():
 	f = open('Config.txt','r')
 	finput = f.readlines()
@@ -229,7 +230,7 @@ def getSamplesFromFile():
 			'192.168.201.129', 8086 , 'root', 'root', 'mydb', 0.2, 1]
 	return sample
 	
-fields = 'SolarWindServer', 'ID', 'Pass', 'Query', 'InfluxdbServer', 'Port', 'ID', 'Pass', 'DBNAME', 'Update Period', 'How many months back?'
+fields = 'SolarWindServer', 'ID', 'Pass', 'Query', 'InfluxdbServer', 'Port', 'ID', 'Pass', 'DBNAME', 'Update Period (mins)', 'How many months back?'
 
 
 if __name__ == '__main__':
