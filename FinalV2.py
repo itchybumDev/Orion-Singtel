@@ -137,9 +137,11 @@ def fetch(variables):
 		latestPointSW = {}
 		#var to load 1 month at first use, then only peiod
 		firstInput = 1
+		#time delay for loading Solarwinds Database in minutes
+		delayBy = 2
 		while (True):
 			if (firstInput==0):
-				a = SQL.replace(('ADDMONTH(-'+str(month)),'ADDMINUTE(-'+str(int(t/60)+2),1)
+				a = SQL.replace(('ADDMONTH(-'+str(month)),'ADDMINUTE(-'+str(int(t/60)+delayBy),1)
 				firstInput=-1
 			if (firstInput==1):
 				firstInput=0
@@ -185,7 +187,10 @@ def fetch(variables):
 				client.write_points(L)
 			
 			print "\n Update Database: " + dbName
-			print " Run time " + str((time.time()-start_time))
+			runTime = time.time()-start_time
+			print " Run time " + str(runTime)
+			if (int(runTime) > 120 ):
+				delayBy = (runtTime + 61)/60
 			print " Executing again in " + str(t)+ " seconds from " + str(datetime.now())+ "\n\n"
 			time.sleep(t);
 	#====================================End of MAIN WORK==================================================		
@@ -242,7 +247,7 @@ def getSamplesFromFile():
 	if (len(sample)!=11):
 		sample = samples = ['win-3vhamfq91kp', 'fish', 'swordfish', 
 			'SELECT c.NodeID, IPAddress, IPAddressType, Caption, DateTime, Archive, MinLoad, MaxLoad, AvgLoad, c.TotalMemory, MinMemoryUsed, MaxMemoryUsed, AvgMemoryUsed, AvgPercentMemoryUsed FROM Orion.CPULoad c , Orion.Nodes n where c.NodeID = n.NodeID',
-			'192.168.201.129', 8086 , 'root', 'root', 'mydb', 0.2, 1]
+			'192.168.201.129', 8086 , 'root', 'root', 'mydb', 2, 1]
 	return sample
 	
 fields = 'SolarWindServer', 'ID', 'Pass', 'Query', 'InfluxdbServer', 'Port', 'ID', 'Pass', 'DBNAME', 'Update Period (mins)', 'How many months back?'
@@ -259,7 +264,7 @@ if __name__ == '__main__':
 	else:
 		samples = ['win-3vhamfq91kp', 'fish', 'swordfish', 
 			'SELECT c.NodeID, IPAddress, IPAddressType, Caption, DateTime, Archive, MinLoad, MaxLoad, AvgLoad, c.TotalMemory, MinMemoryUsed, MaxMemoryUsed, AvgMemoryUsed, AvgPercentMemoryUsed FROM Orion.CPULoad c , Orion.Nodes n where c.NodeID = n.NodeID',
-			'192.168.201.129', 8086 , 'root', 'root', 'mydb', 0.2, 1]
+			'192.168.201.129', 8086 , 'root', 'root', 'mydb', 2, 1]
 
 	vars = makeform(root, fields, samples)	
 	Button(root, text='Start', width = 10,
