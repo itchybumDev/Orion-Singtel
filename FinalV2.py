@@ -169,7 +169,7 @@ def fetch(variables):
 				latestPointSW = L[0]
 				client.write_points(L)
 			
-			print "Run time " + str((time.time()-start_time) +"\n")
+			print "Run time " + str((time.time()-start_time)) + "\n"
 			print "Executing again in " + str(t)+ " seconds from " + str(datetime.now())+ "\n\n"
 			time.sleep(t);
 	#====================================End of MAIN WORK==================================================		
