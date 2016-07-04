@@ -215,6 +215,7 @@ def makeform(root, fields, samples):
         	ent.config(show="*")
         else:
         	ent.config(textvariable=var)
+        ent.config(borderwidth=2)
         variables.append(var)
         var.set(samples[count])
         count+=1
