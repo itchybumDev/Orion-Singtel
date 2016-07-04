@@ -156,7 +156,7 @@ def fetch(variables):
 				else:
 					data = swis.query(SQL)
 			except:
-				print ("SolarWinds ID or Pass is wrong")
+				print ("SolarWinds Server or ID or Pass is wrong")
 				sys.exit()
 			#preparing to get the titles and table name
 			SQL_temp = SQL
