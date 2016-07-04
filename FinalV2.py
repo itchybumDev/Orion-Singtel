@@ -95,7 +95,8 @@ def fetch(variables):
 	SWID = variables[1].get()
 	SWPass = variables[2].get()
 	SQL = variables[3].get()
-	SQL = handleSQL(SQL,1)
+	month = int(variables[10].get())
+	SQL = handleSQL(SQL,month)
 	influxdb = variables[4].get()
 	dbport = variables[5].get()
 	dbID = variables[6].get()
@@ -124,8 +125,9 @@ def fetch(variables):
 		firstInput = 1
 		while (True):
 			if (firstInput==0):
-				a = SQL.replace('ADDMONTH(-1,','ADDMINUTE(-'+str(int(t/60)+2) +',',1)
+				a = SQL.replace(('ADDMONTH(-'+str(month)),'ADDMINUTE(-'+str(int(t/60)+2),1)
 				firstInput=-1
+				print a
 			if (firstInput==1):
 				firstInput=0
 			start_time = time.time()
@@ -221,13 +223,13 @@ def getSamplesFromFile():
 			tmp = tmp.replace(' ','')
 		tmp = tmp.replace('"','')
 		sample.append(tmp)
-	if (len(sample)!=10):
+	if (len(sample)!=11):
 		sample = samples = ['win-3vhamfq91kp', 'fish', 'swordfish', 
 			'SELECT c.NodeID, IPAddress, IPAddressType, Caption, DateTime, Archive, MinLoad, MaxLoad, AvgLoad, c.TotalMemory, MinMemoryUsed, MaxMemoryUsed, AvgMemoryUsed, AvgPercentMemoryUsed FROM Orion.CPULoad c , Orion.Nodes n where c.NodeID = n.NodeID',
-			'192.168.201.129', 8086 , 'root', 'root', 'mydb', 0.2]
+			'192.168.201.129', 8086 , 'root', 'root', 'mydb', 0.2, 1]
 	return sample
 	
-fields = 'SolarWindServer', 'ID', 'Pass', 'Query', 'InfluxdbServer', 'Port', 'ID', 'Pass', 'DBNAME', 'Update Period'
+fields = 'SolarWindServer', 'ID', 'Pass', 'Query', 'InfluxdbServer', 'Port', 'ID', 'Pass', 'DBNAME', 'Update Period', 'How many months back?'
 
 
 if __name__ == '__main__':
@@ -241,7 +243,7 @@ if __name__ == '__main__':
 	else:
 		samples = ['win-3vhamfq91kp', 'fish', 'swordfish', 
 			'SELECT c.NodeID, IPAddress, IPAddressType, Caption, DateTime, Archive, MinLoad, MaxLoad, AvgLoad, c.TotalMemory, MinMemoryUsed, MaxMemoryUsed, AvgMemoryUsed, AvgPercentMemoryUsed FROM Orion.CPULoad c , Orion.Nodes n where c.NodeID = n.NodeID',
-			'192.168.201.129', 8086 , 'root', 'root', 'mydb', 0.2]
+			'192.168.201.129', 8086 , 'root', 'root', 'mydb', 0.2, 1]
 
 	vars = makeform(root, fields, samples)	
 	Button(root, text='Start', width = 10,

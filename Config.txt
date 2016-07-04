@@ -7,4 +7,4 @@ dbport = 8086
 dbID = "root"
 dbPass = "root"
 dbName = "July4"
-t = 1
+t = 5
