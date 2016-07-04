@@ -25,7 +25,6 @@ def convertToUTC(posix_time):
 def submitPoint(rowsTitle,measurement,entryNum):
 	if (entryNum!=0):
 		print "Submit " +str(entryNum)+"th point(s)"
-	
 	d = {"measurement": measurement.replace('.','')}
 	try:
 		d["time"] = (rowsTitle[entryNum]['DateTime'])
@@ -204,6 +203,10 @@ def getMeasurement(s):
 	index_str = index_str + 5
 	tmp = s[index_str:]
 	ans = tmp.split(' ',1)[0]
+	count = 1
+	while (ans==''):
+		ans = tmp.split(' ',(count+1))[count]
+		count+=1
 	return ans
 
 def makeform(root, fields, samples):
