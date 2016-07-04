@@ -190,7 +190,7 @@ def fetch(variables):
 			runTime = time.time()-start_time
 			print " Run time " + str(runTime)
 			if (int(runTime) > 120 ):
-				delayBy = (runtTime + 61)/60
+				delayBy = (runTime + 61)/60
 			print " Executing again in " + str(t)+ " seconds from " + str(datetime.now())+ "\n\n"
 			time.sleep(t);
 	#====================================End of MAIN WORK==================================================		
