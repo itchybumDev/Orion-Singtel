@@ -10,6 +10,8 @@ from datetime import datetime, date
 from influxdb import InfluxDBClient
 from Tkinter import *
 from tkMessageBox import askokcancel
+from tkMessageBox import showinfo
+
 
 def convertUnixTime(str):
 	str = str[:str.find('.')]
@@ -35,6 +37,8 @@ def submitPoint(rowsTitle,measurement,entryNum):
 	d["tags"] = temp_data[0]
 	d["fields"] = temp_data[1]
 	return d
+def showMsg(s):
+	showinfo("Error",message=s)
 
 def getTags(d):
 	tags=['IPAddress','Caption','NodeDescription','DNS','SysName','Vendor','DisplayName','NodeID',
@@ -47,7 +51,7 @@ def getTags(d):
 			ans[key]=d[key]
 			del d[key]
 	return (ans,d)
-
+'''
 def getRecentDateInflux(client):
 	print("Loading influxDB Database...")
 	result = client.query("SELECT * FROM OrionCPULoad ORDER by DESC LIMIT 1")
@@ -61,6 +65,7 @@ def getRecentDateInflux(client):
 	except:
 		print "New Database is Created"
 		return 0
+'''
 #=========================================GUI Interface===============================
 class Quitter(Frame):                          
     def __init__(self, parent=None):           
@@ -94,29 +99,31 @@ def fetch(variables):
 	try:
 		int(variables[10].get())
 		float(variables[9].get())
+		int(variables[5].get())
 	except:
-		print ("Please input Number for Minutes and Months")
+		showMsg("Please input Number for Minutes/Months and Port")
 		sys.exit()
 
 	SolarWinds = variables[0].get()
 	SWID = variables[1].get()
 	SWPass = variables[2].get()
 	SQL = variables[3].get()
-	month = int(variables[10].get())
-	SQL = handleSQL(SQL,month)
 	influxdb = variables[4].get()
 	dbport = variables[5].get()
 	dbID = variables[6].get()
 	dbPass = variables[7].get()
 	dbName = variables[8].get()
 	t = float(variables[9].get()) * 60.0
+	month = int(variables[10].get())
+
+	SQL = handleSQL(SQL,month)
 	#check for the entry in influxdb table
 
 	#====================================MAIN WORK==================================================
 	def callback():
 		print "Starting to pipe Data ORION --> Influxdb"
 		if SQL.count('DateTime')<=2:
-			print('Please Insert DateTime to the Query for TimeSeries Data')
+			print 'Please Insert DateTime to the Query for TimeSeries Data'
 			sys.exit()
 		#open InfluxDB server to connect
 		try:
