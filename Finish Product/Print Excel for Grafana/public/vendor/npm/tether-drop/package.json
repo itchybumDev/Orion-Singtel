@@ -1,0 +1,51 @@
+{
+  "name": "tether-drop",
+  "version": "1.4.2",
+  "description": "Client-side library for creating dropdowns",
+  "authors": [
+    "Zack Bloom <zackbloom@gmail.com>",
+    "Adam Schwartz <adam.flynn.schwartz@gmail.com>"
+  ],
+  "maintainers": [
+    {
+      "name": "Nicholas Hwang",
+      "email": "nick.joosung.hwang@gmail.com"
+    }
+  ],
+  "scripts": {
+    "build": "gulp build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HubSpot/drop.git"
+  },
+  "license": "MIT",
+  "main": "dist/js/drop.js",
+  "devDependencies": {
+    "bower": "^1.4.1",
+    "del": "^1.1.1",
+    "eslint": "^1.7.3",
+    "gulp": "^3.9.0",
+    "gulp-autoprefixer": "^2.3.1",
+    "gulp-babel": "^5.1.0",
+    "gulp-bump": "^0.3.0",
+    "gulp-header": "^1.2.2",
+    "gulp-minify-css": "^1.1.6",
+    "gulp-plumber": "^1.0.1",
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^2.0.1",
+    "gulp-uglify": "^1.2.0",
+    "gulp-wrap-umd": "^0.2.1"
+  },
+  "dependencies": {
+    "tether": "^1.1.0"
+  },
+  "readme": "## Drop\n\n[![GitHub\nversion](https://badge.fury.io/gh/HubSpot%2Fdrop.svg)](http://badge.fury.io/gh/HubSpot%2Fdrop)\n\nDrop.js is a powerful Javascript and CSS library for creating dropdowns and other floating displays.\n\n[![Drop Docs](http://i.imgur.com/sgmx9aJ.png)](http://github.hubspot.com/drop/)\n\n\n## Install\n\n__Dependencies__\n\n* __[Tether](https://github.com/HubSpot/tether)__\n\nInstalling via `npm` and `bower` will bring in the above dependencies as well.\n\n\n__npm__\n```sh\n$ npm install tether-drop\n```\n\n__bower__\n```sh\n$ bower install tether-drop\n```\n\n## Usage\n\n```javascript\nlet dropInstance = new Drop({\n  target: document.querySelector('.drop-target'),\n  content: 'Welcome to the future',\n  classes: 'drop-theme-arrows',\n  position: 'bottom left',\n  openOn: 'click'\n})\n```\n\n[API documentation](http://github.hubspot.com/drop)\n\n[Demo](http://github.hubspot.com/drop/docs/welcome)\n\n\n## Contributing\n\nWe encourage contributions of all kinds. If you would like to contribute in some way, please review our [guidelines for contributing](CONTRIBUTING.md).\n\n\n## License\nCopyright &copy; 2015 HubSpot - [MIT License](LICENSE)\n",
+  "readmeFilename": "README.md",
+  "bugs": {
+    "url": "https://github.com/HubSpot/drop/issues"
+  },
+  "homepage": "https://github.com/HubSpot/drop#readme",
+  "_id": "tether-drop@1.4.2",
+  "_from": "tether-drop@>=1.4.2 <2.0.0"
+}

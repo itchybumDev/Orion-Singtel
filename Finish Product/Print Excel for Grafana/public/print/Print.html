@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        #downloadButton {
+        background-color: #4CAF50; /* Green */
+        border: none;
+        color: white;
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: none;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+    }
+    </style>
+<title>Grafana Dashboard Downloader</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script> 
+</head>
+<body>
+
+
+<center>
+
+    <input type="button" id = "downloadButton" onclick="downloadAll()" value="Download All">
+    <br>
+    <br>
+    <br>
+
+<script>
+    var panelIndex = new Array();
+    var URL="";
+    var dbName = getParameterByName("var-DBname");
+    var dbFrom = getParameterByName("from");
+    var dbTo = getParameterByName("to");
+    var myURL = window.location.href;
+    if (dbName==null){
+        alert("Something went wrong");
+        exit();
+    }
+    if (dbFrom==null){
+        dbFrom = "now-30m"
+        alert("Enable Time range in Grafana>Settings>Links to see different time graph");
+    }
+    if (dbTo==null){
+        dbTo = "now";
+    }
+
+    newPage();
+    showNext();
+    console.log("name: " + dbName + " dbFrom: " + dbFrom + " dbTo: " + dbTo);
+    function newPage(){
+    //--------------Get INPUT from URL --------------------
+    
+    var backlashIndex=0;
+    var tempIndex =0;
+    var tempStr = myURL;
+        for (var i = 0; i< 3; i++){
+            temp = tempStr.indexOf('/');
+            tempStr = tempStr.substring(temp+1);
+            backlashIndex+=temp+1;
+        }
+
+    myURL = myURL.substring(0,backlashIndex);
+
+
+    //--------------Get INPUT from URL --------------------
+
+
+    url_temp = myURL + "api/dashboards/db/" + dbName;
+    URL = myURL + "render/dashboard-solo/db/"+ dbName + "?";
+   //http://192.168.100.2:3000/render/dashboard-solo/db/practice1
+    
+    //var author = "Bearer " + key;
+    $.ajax({
+        type: "GET",
+        crossDomain : true,
+        url: url_temp,   
+        dataType: "json",
+        jsonpCallback: "mycallback",
+
+    success:  function(data){
+        //alert("success");
+        var count = 0;
+        for (var z = 0; z < data.dashboard.rows.length;z++){
+            var numPanel = data.dashboard.rows[z].panels.length;
+            //console.log(numPanel);
+            while (numPanel-- > 0){
+                //console.log(data.dashboard.rows[z].panels[numPanel].id);
+                panelIndex[count++] = data.dashboard.rows[z].panels[numPanel].id;
+            }
+        }
+        //console.log(data.dashboard.rows[2].panels);
+        //console.log("finaL" + panelIndex);
+        edit();
+      },
+    error : function(data,httpReq,status,exception){
+       alert(this.url + httpReq+" "+status + " " +exception);
+        },
+    })
+    
+         
+
+//  -----------------------Get JSON--------------------------->
+     }
+
+    function getParameterByName(name, url) {
+        if (!url) url = window.location.href;
+        name = name.replace(/[\[\]]/g, "\\$&");
+        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+            results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, " "));
+    }   
+
+    
+    function showNext(){
+        document.getElementById("downloadButton").style.display = "block";
+    }
+    
+    
+    // function to download All img at the same time
+    function downloadAll(){
+        var aTags = document.getElementsByTagName('a');
+        var x = aTags.length;
+        for (var i = 0; i < x; i++) {
+            aTags[i].click();
+            sleep(1000);
+        }
+    }
+    
+    //Sleep function for JS
+    function sleep(milliseconds) {
+      var start = new Date().getTime();
+      for (var i = 0; i < 1e7; i++) {
+        if ((new Date().getTime() - start) > milliseconds){
+          break;
+        }
+      }
+    }
+    
+
+    function edit(){   
+    //-------------------------------------------END OF Processing JSON INPUT-------------------------------------------- 
+    //split the string & get the panel value;
+    /*
+    var strPieces = URL.split("&");
+    var panelIdURL;
+    var k;
+    for (k = 0; k<strPieces.length; k++){
+        if (strPieces[k].indexOf("panelId") > -1){
+            var index = strPieces[k].indexOf("panelId");
+            panelIdURL = strPieces[k].substring(index);
+        }
+    }
+    */
+
+    var cars = new Array();
+   for (j = 0; j<panelIndex.length; j++){
+        //console.log(panelIndex[j]);
+        var nURL = URL + "panelId="+panelIndex[j] +"&from" + dbFrom + "&to"+dbTo+ 
+        "&theme=light&width=1000&height=500";
+        cars[j] = nURL;
+        console.log(nURL);
+    }
+    //alert(cars);
+
+   
+    
+//-------------------------------------------Starting new section--------------------------------------------
+    
+
+    //-------------------------------------------Starting new section--------------------------------------------
+    
+   var i = 0;
+    
+    for (i =0; i<cars.length;i++){
+            
+           // var mydiv = document.getElementById("myDiv");
+            var cTag = document.createElement('center');
+            var aTag = document.createElement('a');
+            var breakTag = document.createElement('br');
+            var t = document.createTextNode("CLICK ME");
+            aTag.setAttribute('id', 'imageDownload');
+            aTag.setAttribute('href',cars[i]);
+            aTag.setAttribute('download','update.png');
+            // aTag.appendChild(t);
+
+            var imgTag = document.createElement('img');
+            imgTag.setAttribute('src',cars[i]);
+            aTag.appendChild(imgTag);
+            cTag.appendChild(aTag);
+            cTag.appendChild(breakTag);
+            cTag.appendChild(breakTag);
+            document.body.appendChild(cTag);
+        
+        
+    }
+    //-------Print to PDF----///
+    
+}
+    
+</script>
+    
+    
+    </center>
+</body>
+</html>

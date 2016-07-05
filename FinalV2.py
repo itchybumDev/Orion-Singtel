@@ -132,12 +132,12 @@ def fetch(variables):
 		except:
 			print ("InfluxDb server/port/ID or Pass is wrong")
 			sys.exit()
-
+		#open SolarWinds server to connect
 		swis = orionsdk.SwisClient(SolarWinds, SWID, SWPass)
 		latestPointSW = {}
-		#var to load 1 month at first use, then only peiod
+		#var to load 1 month-worth of data at first use, then only a short peiod afterwards
 		firstInput = 1
-		#time delay for loading Solarwinds Database in minutes
+		#minute-worth of data for loading Solarwinds Database (in minutes)
 		delayBy = 2
 		while (True):
 			if (firstInput==0):
@@ -149,7 +149,7 @@ def fetch(variables):
 
 			#turn of the Certificate warning
 			requests.packages.urllib3.disable_warnings()
-			#getting query done. Prefer input as the locahost name rather than dynamic IP address.
+			#getting query done 
 			try:
 				if (firstInput==-1):
 					data = swis.query(a)
@@ -161,7 +161,7 @@ def fetch(variables):
 			#preparing to get the titles and table name
 			SQL_temp = SQL
 			SQL_temp = SQL_temp.replace(',','')
-			#this line is to get the name of the table
+			#this line is to get the Series Name
 			measurement = getMeasurement(SQL_temp)
 			data_str = json.dumps(data)
 			data_arr = json.loads(data_str)
@@ -170,8 +170,8 @@ def fetch(variables):
 			except:
 				print "Error in Query Request Please check Syntax Again"
 				sys.exit()
-			L = []
 			
+			L = []
 			for i in range(0,len(rowsTitle)):
 				onePoint=submitPoint(rowsTitle,measurement,i)
 				#Check to see which is the latest point posting to InfluxDB
@@ -180,8 +180,8 @@ def fetch(variables):
 					break
 				L.append(onePoint)
 			
-			if not L:
-				p=1 #useless code, just for syntax purpose
+			if not L: #if no new point is added to L, dont post anything
+ 				p=1 #useless code, just for syntax purpose
 			else:
 				latestPointSW = L[0]
 				client.write_points(L)
