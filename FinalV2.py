@@ -114,7 +114,8 @@ def fetch(variables):
 	dbName = variables[8].get()
 	t = float(variables[9].get()) * 60.0
 	month = int(variables[10].get())
-
+	#replace multiple whitespaces with 1 whitespace
+	SQL = ' '.join(SQL.split())
 	SQL = handleSQL(SQL,month)
 	#check for the entry in influxdb table
 
@@ -203,10 +204,6 @@ def getMeasurement(s):
 	index_str = index_str + 5
 	tmp = s[index_str:]
 	ans = tmp.split(' ',1)[0]
-	count = 1
-	while (ans==''):
-		ans = tmp.split(' ',(count+1))[count]
-		count+=1
 	return ans
 
 def makeform(root, fields, samples):
