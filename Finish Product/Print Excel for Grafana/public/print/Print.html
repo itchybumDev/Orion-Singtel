@@ -16,7 +16,7 @@
     }
     </style>
 <title>Grafana Dashboard Downloader</title>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script> 
+<script src="jquery.min.js"></script> 
 </head>
 <body>
 
@@ -46,10 +46,9 @@
     if (dbTo==null){
         dbTo = "now";
     }
-
     newPage();
     showNext();
-    console.log("name: " + dbName + " dbFrom: " + dbFrom + " dbTo: " + dbTo);
+
     function newPage(){
     //--------------Get INPUT from URL --------------------
     
@@ -158,6 +157,9 @@
     */
 
     var cars = new Array();
+    
+
+    
    for (j = 0; j<panelIndex.length; j++){
         //console.log(panelIndex[j]);
         var nURL = URL + "panelId="+panelIndex[j] +"&from" + dbFrom + "&to"+dbTo+ 
@@ -174,7 +176,7 @@
 
     //-------------------------------------------Starting new section--------------------------------------------
     
-   var i = 0;
+    var i = 0;
     
     for (i =0; i<cars.length;i++){
             
@@ -186,7 +188,7 @@
             aTag.setAttribute('id', 'imageDownload');
             aTag.setAttribute('href',cars[i]);
             aTag.setAttribute('download','update.png');
-            // aTag.appendChild(t);
+          //  aTag.appendChild(t);
 
             var imgTag = document.createElement('img');
             imgTag.setAttribute('src',cars[i]);
