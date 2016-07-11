@@ -23,8 +23,6 @@ def convertToUTC(posix_time):
 	return datetime.utcfromtimestamp(posix_time).strftime('%Y-%m-%dT%H:%M:%SZ')
 
 def submitPoint(rowsTitle,measurement,entryNum):
-	if (entryNum!=0):
-		print "Submit " +str(entryNum)+"th point(s)"
 	d = {"measurement": measurement.replace('.','')}
 	try:
 		d["time"] = (rowsTitle[entryNum]['DateTime'])
@@ -183,6 +181,7 @@ def fetch(variables):
 			if not L: #if no new point is added to L, dont post anything
  				p=1 #useless code, just for syntax purpose
 			else:
+				print "Submit " +str(len(L))+" point(s)"
 				latestPointSW = L[0]
 				client.write_points(L)
 			
