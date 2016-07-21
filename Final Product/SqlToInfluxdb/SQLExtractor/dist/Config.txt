@@ -1,0 +1,11 @@
+SQL = win-3vhamfq91kp
+dbName = SolarWindsOrion
+SWID = "fish"
+SWPass = "swordfish"
+SQL = "SELECT c.NodeID, Caption, DateTime, Archive, MinLoad, MaxLoad, AvgLoad, c.TotalMemory, MinMemoryUsed, MaxMemoryUsed, AvgMemoryUsed, AvgPercentMemoryUsed FROM CPULoad c , Nodes n where c.NodeID = n.NodeID" 
+influxdb = "192.168.201.129"
+dbport = 8086
+dbID = "root"
+dbPass = "root"
+dbName = "mydb"
+t = 5
